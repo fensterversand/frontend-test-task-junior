@@ -1,29 +1,42 @@
 <template>
     <div>
         <h1>Todo list</h1>
+        <div v-if="tasks.length > 0">
+            <div>
+                <Button @click="clearList" >Clear list</Button>
+            </div>
+            <ul>
+                <li v-for="(task, idx) in tasks" :key="idx" :class="[task.done && 'done']">
+                    <Task :task="task" :id="idx" />
+                </li>
+            </ul>
+        </div>
 
-        <ul>
-            <li v-for="(task, idx) in tasks" :key="idx" :class="[task.done && 'done']">
-                <span v-html="'Task: ' + task.label" />
-                <div>
-                    <button @click="remove(idx)">&times;</button>
-                </div>
-            </li>
-        </ul>
+        <div v-else>
+            <h2>Ooops looks like your todo list is empty</h2>
+            <img v-bind:src="image" alt="" class="image" />
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from 'vue';
 import { useStore } from '../store';
+import Task from './Task.vue';
+import Button from './Button.vue';
+import image from '../assets/images/empty-list.png';
 
 const store = useStore();
 
 const tasks = computed((): Task[] => store.getters.tasks);
 
-function remove(index: number) {
-    store.commit('removeTask', index);
-}
+const clearList = () => {
+    store.commit('clearList');
+};
+
+const cb = (e: any) => {
+    console.log('callback', e);
+};
 </script>
 
 <style scoped lang="scss">
@@ -45,17 +58,13 @@ ul {
 
         padding: 10px;
 
-        span {
-            display: block;
-            margin-bottom: 10px;
-        }
-
         &.done {
-            border: 1px dashed #42b983;
-            span {
-                text-decoration-line: line-through;
-            }
+            border: 1px dashed green;
         }
     }
+}
+
+.image {
+    max-width: 50rem;
 }
 </style>

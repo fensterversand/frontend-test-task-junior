@@ -42,18 +42,16 @@ const tasks: Task[] = [
 export const store = createStore<State>({
     devtools: import.meta.env.DEV,
     strict: true,
-    plugins: [
-        createPersistedState({ storage: window.localStorage })
-    ],
+    plugins: [createPersistedState({ storage: window.localStorage })],
     state() {
         return {
             tasks,
-        }
+        };
     },
     getters: {
         tasks(state) {
             return state.tasks;
-        }
+        },
     },
     mutations: {
         addTask(state, task: Task) {
@@ -61,6 +59,13 @@ export const store = createStore<State>({
         },
         removeTask(state, index: number) {
             state.tasks[index] && state.tasks.splice(index, 1);
+        },
+        completeTask(state, payload: { id: number; isDone: boolean }) {
+            console.log(payload, 'called');
+            state.tasks[payload.id].done = payload.isDone;
+        },
+        clearList(state) {
+            state.tasks = [];
         },
     },
 });

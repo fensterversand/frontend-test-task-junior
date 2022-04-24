@@ -2,29 +2,38 @@
     <div>
         <h1>ADD TASK</h1>
 
-        <div class="">
-
-        </div>
 
         <label>Task:</label>
-        <input type="text" id="newTaskLabel">
+        <input ref="taskInput" @keyup.enter="saveTask" type="text" id="newTaskLabel" />
 
-        <br>
-        <button type="button" @click="saveTask()">Save</button>
+        <br />
+        <Button @click="saveTask()">Save</Button>
     </div>
 </template>
 
 <script setup lang="ts">
-import { useStore }  from '../store';
+import { ref, onMounted } from 'vue';
+import { useStore } from '../store';
 import { useRouter } from 'vue-router';
+import Button from './Button.vue'
 
 const store = useStore();
 const router = useRouter();
 
+const taskInput = ref();
+
+onMounted(() => {
+    taskInput.value.focus();
+});
+
 function saveTask() {
-    const el = document.querySelector('#newTaskLabel') as HTMLInputElement;
-    store.commit('addTask', { label: el.value, done: false } as Task);
-    router.push({ name: 'list' });
+    const { value } = taskInput.value;
+    if (value.length === 0) {
+        taskInput.value.focus();
+    } else {
+        store.commit('addTask', { label: value, done: false } as Task);
+        router.push({ name: 'list' });
+    }
 }
 </script>
 
